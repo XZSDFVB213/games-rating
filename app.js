@@ -1,28 +1,23 @@
-const http = require('http');
-const fs = require('fs');
-const {
-  mainRouteController,
-  defaultRouteController,
-  gameRouteController,
-  voteRouteController,
-} = require('./controllers');
-const PORT = 3007;
-const server = http.createServer((req, res) => {
-  const url = req.url;
-  switch (url) {
-    case '/':
-      mainRouteController(res, '/index.html', '.html');
-      break;
-    case '/game':
-      gameRouteController(res);
-      break;
-    case '/vote':
-      voteRouteController(req,res);
-      break;
-    default:
-      defaultRouteController(res, url);
-      break;
-  }
-});
+const express = require("express");
+const bodyParser = require("body-parser");
+const cors = require("./middlewares/cors");
 
-server.listen(PORT);
+const path = require("path");
+
+const mainRoute = require("./routes/main");
+const gamesRouter = require("./routes/games");
+
+const PORT = 3000;
+const app = express();
+
+app.use(
+  cors,
+  bodyParser.json(),
+  express.static(path.join(__dirname, "public")),
+  mainRoute,
+  gamesRouter
+);
+
+app.listen(PORT, () => {
+  console.log(`Приложение запущено: http://localhost:${PORT}`);
+});
